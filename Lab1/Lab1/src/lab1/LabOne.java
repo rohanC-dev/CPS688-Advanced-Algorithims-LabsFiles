@@ -181,6 +181,14 @@ or the xpecetd format of th etoutput.
 	public static int[] generatePseudos (int m, int a, int c, int x_0, int n) {
 		
 		// Write your code here
+                int[] randomNumbers = new int[n];
+                int temp = x_0;
+                for(int i = 0; i < randomNumbers.length; i++){
+                    randomNumbers[i] = (a*temp + c)%m;
+                    temp = randomNumbers[i];
+                }
+                
+                return randomNumbers;
 
 	}
 }
