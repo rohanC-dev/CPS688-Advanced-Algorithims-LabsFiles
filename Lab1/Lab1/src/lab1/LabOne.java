@@ -154,6 +154,22 @@ or the xpecetd format of th etoutput.
                 }
                 
                 System.out.println("---------Double Hasing---------");
+                int[] hashTable3 = new int[values.length];
+                for(int i = 0; i < values.length; i++){
+                    int index = ((3*values[i])+5)%11;
+                    if(hashTable3[index] == 0){
+                        hashTable3[index] = values[i];
+                    }else{
+                        int hk = 7-(values[i]%7);
+                        int count = 0;
+                        while(hashTable3[index] != 0){
+                            index = (index + count*hk)%11;
+                            count++;
+                        }
+                        hashTable3[index] = values[i];
+                    }
+                }
+                
                 
 		
 	}
