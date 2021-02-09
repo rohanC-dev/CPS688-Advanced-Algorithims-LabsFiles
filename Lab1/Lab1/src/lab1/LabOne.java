@@ -129,12 +129,14 @@ or the xpecetd format of th etoutput.
       
                 for(int i = 0; i < values.length; i++){
                     int size = hashTable[i].size();
+                    System.out.print("(" + i + ":");
                     for(int j = 0; j < size; j++){
-                        System.out.println("HashTable Index: " + i);
-                        System.out.println("LinkList Index: " + j);
-                        System.out.println("Value:" + hashTable[i].get(j));
-                        System.out.println("--------------------");
+                        
+                        System.out.print(" " + hashTable[i].get(j) + ",");
+                        //System.out.println("Value:" + hashTable[i].get(j));
+                        //System.out.println("--------------------");
                     }
+                    System.out.print(")\n");
                 }
                 
                 System.out.println("---------Linear Probing---------");
@@ -150,6 +152,11 @@ or the xpecetd format of th etoutput.
                         }
                         hashTable2[index] = values[i];
                     }
+                    
+                }
+                
+                for(int i = 0; i < values.length; i++){
+                    System.out.print("(" + i + ":" + hashTable2[i] + ")\n");
                     
                 }
                 
@@ -170,6 +177,10 @@ or the xpecetd format of th etoutput.
                     }
                 }
                 
+                for(int i = 0; i < values.length; i++){
+                    System.out.print("(" + i + ":" + hashTable3[i] + ")\n");
+                    
+                }
                 
 		
 	}
