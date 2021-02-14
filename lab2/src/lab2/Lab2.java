@@ -56,6 +56,22 @@ public class Lab2{
                     System.out.print("}\n");
                 }
                 
+                // create an adjacency matrix of the graph
+                int[][] adjMatrix = new int[n][n];
+                for(int i = 0; i < g.length ; i++){
+//                    for(int j = 0; j < g[i].length; j++){
+//                        int num = g[i][j];
+//                        adjMatrix[i][num] = 1;
+//                        adjMatrix[num][i] = 1;
+//                    }
+                    // first vertex: g[i][0]
+                    // second vertex: g[i][1]
+                    
+                    adjMatrix[g[i][0]][g[i][1]] = 1;
+                    adjMatrix[g[i][1]][g[i][0]] = 1;
+                    
+                }
+                
 
 	}
 	
