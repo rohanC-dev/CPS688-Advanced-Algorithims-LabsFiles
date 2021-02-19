@@ -6,6 +6,9 @@ Lab 2 - CPS688 - W21
 //////////////////////////////////////////////////
 package lab2;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
+
 public class Lab2{
 	public static void main(String[] args) {
 	
@@ -33,7 +36,7 @@ public class Lab2{
 		// Your search should start at vertex "start_node2".
 		System.out.print("--- Q3 -------\n");
 		int n3=9; 
-		int start_node2=0; // set of vertices = {0,1,2,3,4,5,6,7,8}
+		int start_node2=2; // set of vertices = {0,1,2,3,4,5,6,7,8}
 		int[][] graph3 = {{0,1},{0,5},{0,7},{1,2},{2,3},{2,7},{2,8},{3,4},{4,6},{4,8},{5,6},{6,8}}; 
 		question3(start_node2,n3,graph3);
 		
@@ -59,19 +62,103 @@ public class Lab2{
                 // create an adjacency matrix of the graph
                 int[][] adjMatrix = new int[n][n];
                 for(int i = 0; i < g.length ; i++){
-//                    for(int j = 0; j < g[i].length; j++){
-//                        int num = g[i][j];
-//                        adjMatrix[i][num] = 1;
-//                        adjMatrix[num][i] = 1;
-//                    }
                     // first vertex: g[i][0]
                     // second vertex: g[i][1]
-                    
-                    adjMatrix[g[i][0]][g[i][1]] = 1;
-                    adjMatrix[g[i][1]][g[i][0]] = 1;
-                    
+                    adjMatrix[g[i][0]][g[i][1]]++;
+                    // if statement componsates for a loop in the graph
+                    if(g[i][0] != g[i][1]){
+                        adjMatrix[g[i][1]][g[i][0]]++;
+                    }
+                }
+                //printing the adjacency matrix
+                System.out.println("--Adjacency Matrix--");
+                for(int i = 0; i < adjMatrix.length; i++){
+                    for(int j = 0; j < adjMatrix[i].length; j++){
+                        System.out.print(" " + adjMatrix[i][j]);
+                    }
+                    System.out.print("\n");
                 }
                 
+                
+                // print the degree of all the verticies
+                int[] degrees = new int[n];
+                for(int i = 0; i < adjMatrix.length; i++){
+                    for(int j = 0; j < adjMatrix[i].length; j++){
+                        degrees[i] = degrees[i] + adjMatrix[i][j];
+                    }
+                }
+                
+                System.out.println("---The Degrees of All Vertices---");
+                System.out.print("{");
+                
+                for(int i = 0;  i < degrees.length; i++){
+                    System.out.print(i + ", ");
+                }
+                System.out.println("}");
+                
+
+                // the total degree of the graph
+                int sum = 0;
+                for(int i = 0; i < degrees.length; i++){
+                    sum = sum + degrees[i];
+                }
+                System.out.println("--Total degree of graph--\n" + sum);
+                
+                // determine any isolated verticies
+                System.out.println("--Isolated Verticies--");
+                // isolated vertices are the ones in the matrix that have a value of 0 for in every colum or just a 1 in the diagonal part
+                for(int i = 0; i < adjMatrix.length; i++){
+                    boolean isIsolated = true;
+                    for(int j = 0; j < adjMatrix[i].length; j++){
+                        if(adjMatrix[i][j] != 0){
+                            // check for loops
+                            if(i != j){
+                                isIsolated = false;
+                            }
+                        }
+                    }
+                    if(isIsolated == true){
+                        System.out.println(i);
+                    }
+                }
+                
+                // determine if simple graph or not
+                
+                // checking for A[i, j] > 1
+                boolean parallelEdgesExist = false;
+                for(int i = 0; i < adjMatrix.length; i++){
+                    for(int j = 0; j < adjMatrix[i].length; j++){
+                        if(adjMatrix[i][j] > 1){
+                            parallelEdgesExist = true;
+                            break;
+                        }
+                        
+                    }
+                }
+                
+                //checking for loops
+                System.out.println("The input graph is simple:");
+                boolean loopsExist = false;
+                for(int i = 0; i < adjMatrix.length; i++ ){
+                    if(adjMatrix[i][i] != 0){
+                        loopsExist = true;
+                        break;
+                    }
+                }
+                
+                if(parallelEdgesExist && loopsExist){
+                    //System.out.println("The graph is not a simple graph because loops and parallel edges exist.");
+                    System.out.println("NO");
+                }else if(parallelEdgesExist && !loopsExist){
+                    //System.out.println("The graph is not a simple graph because parallel edges exist.");
+                    System.out.println("NO");
+                }else if(!parallelEdgesExist && loopsExist){
+                    //System.out.println("The graph is not a simple graph because loops exist.");
+                    System.out.println("NO");
+                }else{
+                    //System.out.println("The graph is a simple graph because loops and parallel edges don't exist.");
+                    System.out.println("YES");
+                }
 
 	}
 	
@@ -80,6 +167,37 @@ public class Lab2{
 	static void question2 (int m, int n, int[][] g) {
 		
 		// Write your code here
+                int[][] adjMatrix = new int[n][n];
+                for(int i = 0; i < g.length ; i++){
+                    // first vertex: g[i][0]
+                    // second vertex: g[i][1]
+                    adjMatrix[g[i][0]][g[i][1]]++;
+                    // if statement componsates for a loop in the graph
+                }
+                
+                //printing the adjacency matrix
+//                System.out.println("--Adjacency Matrix--");
+//                for(int i = 0; i < adjMatrix.length; i++){
+//                    for(int j = 0; j < adjMatrix[i].length; j++){
+//                        System.out.print(" " + adjMatrix[i][j]);
+//                    }
+//                    System.out.print("\n");
+//                }
+
+//                int[] visitedVertex = new int[n];
+//                
+//                if(visitedVertex[m]==0){
+//                    System.out.println(m);
+//                    visitedVertex[m]=1;
+//                    for(int start = m; start < n-1; start++){
+//                        for(int i = 0; i < n-1; i++){
+//                            if(adjMatrix[start][i]==1 && visitedVertex[i]==0){
+//                                question2(i, n, g);
+//                            }
+//                        }
+//                    } 
+//                }
+                
 		
 	}
 	
@@ -88,6 +206,47 @@ public class Lab2{
 	static void question3 (int m, int n, int[][] g) {
 		
 		// Write your code here
+                int[][] adjMatrix = new int[n][n];
+                for(int i = 0; i < g.length ; i++){
+                    // first vertex: g[i][0]
+                    // second vertex: g[i][1]
+                    adjMatrix[g[i][0]][g[i][1]]++;
+                    // if statement componsates for a loop in the graph
+                    if(g[i][0] != g[i][1]){
+                        adjMatrix[g[i][1]][g[i][0]]++;
+                    }
+                }
+                
+                 
+                int[] visitedVertex = new int[n];
+                // queue for storing vertex left to visit
+                Queue<Integer> q = new ArrayDeque<>();
+                // queue to store BFS traversal and print it
+                Queue<Integer> qBFS = new ArrayDeque<>();
+                int x;
+                qBFS.add(m);
+                visitedVertex[m] = 1;
+                q.add(m);
+                while(q.isEmpty()==false){
+                    x = q.remove();
+                    for(int i = 0; i <= n-1; i++){
+                        if(adjMatrix[x][i] > 0 && visitedVertex[i] == 0){
+                            qBFS.add(i);
+                            visitedVertex[i] = 1;
+                            q.add(i);
+                        }
+                    }
+                    
+                }
+                System.out.println("--BFS Traversal--");
+                System.out.print("{");
+                int sizeOfQueue = qBFS.size();
+                for(int i = 0; i < sizeOfQueue; i++){
+                    System.out.print(qBFS.remove() + ", ");
+                }
+                System.out.println("}");
+                
+                
 	}
 }
 
