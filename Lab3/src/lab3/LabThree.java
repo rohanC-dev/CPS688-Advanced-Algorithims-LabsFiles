@@ -186,8 +186,11 @@ Write your solution below where it is indicated.
 //                }
                 
                 ArrayList<int[]> mst = new ArrayList<int[]>();
-                int[] nearVertex = {inf, inf, inf, inf, inf, inf};
-                
+                //int[] nearVertex = {inf, inf, inf, inf, inf, inf};
+                ArrayList<Integer> nearVertex = new ArrayList<Integer>();
+                for(int i = 0; i < num_vertices+1; i++){
+                    nearVertex.add(inf);
+                }
                 // finding minimum cost edge to starting vertex (step 2)
                 int minStartCost = costAdjMatrix[starting_vertex][1];
                 int minStartVertex = starting_vertex;
@@ -202,15 +205,19 @@ Write your solution below where it is indicated.
                 int[] arr = {1, minStartVertex, minStartCost};
                 mst.add(arr);
                 
-                nearVertex[starting_vertex] = 0;
-                nearVertex[minStartVertex] = 0;
+                nearVertex.set(starting_vertex, 0);
+                //nearVertex[starting_vertex] = 0;
+                nearVertex.set(minStartVertex, 0);
+                //nearVertex[minStartVertex] = 0;
                 
-                for(int i = 1; i <  nearVertex.length; i++){
-                    if(nearVertex[i] != 0){
+                for(int i = 1; i <  nearVertex.size(); i++){
+                    if(nearVertex.get(i) != 0){
                         if(costAdjMatrix[i][starting_vertex] < costAdjMatrix[i][minStartVertex]){
-                            nearVertex[i] = starting_vertex;
+                            //nearVertex[i] = starting_vertex;
+                            nearVertex.set(i, starting_vertex);
                         }else{
-                            nearVertex[i] = minStartVertex;
+                            //nearVertex[i] = minStartVertex;
+                            nearVertex.set(i, minStartVertex);
                         }
                     }
                     
@@ -221,19 +228,21 @@ Write your solution below where it is indicated.
                 for(int i = 1; i < num_vertices-1; i++){
                     minVertex = inf;
                     for(int j = 1; j <= num_vertices; j++){
-                        if(nearVertex[j] != 0 && costAdjMatrix[j][nearVertex[j]] < minVertex){
+                        if(nearVertex.get(j) != 0 && costAdjMatrix[j][nearVertex.get(j)] < minVertex){
                             k = j;
-                            minVertex = costAdjMatrix[j][nearVertex[j]];
+                            minVertex = costAdjMatrix[j][nearVertex.get(j)];
                         }
                     }
                     
-                    int[] edge = {k, nearVertex[k], minVertex};
+                    int[] edge = {k, nearVertex.get(k), minVertex};
                     mst.add(edge);
-                    nearVertex[k] = 0;
+                    //nearVertex[k] = 0;
+                    nearVertex.set(k, 0);
                     
                     for(int j = 1; j <= num_vertices; j++){
-                        if(nearVertex[j] != 0 && costAdjMatrix[j][k] < costAdjMatrix[j][nearVertex[j]]){
-                            nearVertex[j] = k;
+                        if(nearVertex.get(j) != 0 && costAdjMatrix[j][k] < costAdjMatrix[j][nearVertex.get(j)]){
+                            //nearVertex[j] = k;
+                            nearVertex.set(j, k);
                         }
                     }
                 }
@@ -246,7 +255,7 @@ Write your solution below where it is indicated.
                 for(int i = 0; i < mst.size(); i++){
                     
                     System.out.println("(" + mst.get(i)[0] + ", " + mst.get(i)[1] + ")  " + mst.get(i)[2]);
-                    System.out.println("\n");
+                    
                 }
                 
                 
@@ -263,16 +272,87 @@ Write your solution below where it is indicated.
 	public static int mst_Kruskal (int num_vertices, int num_edges, int[][] graph) {
 		int total_weight=0;
                 final int inf = 2147483647;
-                int[] set = {-1, -1, -1, -1, -1, -1};
-                int[] isIncluded = {0, 0, 0, 0, 0, 0};
                 ArrayList<int[]> mst = new ArrayList<int[]>();
+                int[] set = new int[num_vertices+1];
+                int[] isIncluded = new int[graph.length];
+                for(int i = 0; i < set.length; i++){
+                    set[i] = -1;
+                }
+                for(int i = 0; i < isIncluded.length; i++){
+                    isIncluded[i] = 0;
+                }
+                
+                int i =0;
+                int minimum;
+                int u= 0;
+                int v = 0;
+                int k = 0;
+                while(i < num_vertices-1){
+                    minimum = inf;
+                    for(int j = 0; j < num_edges; j++){
+                        if(isIncluded[j] == 0 && graph[j][2] < minimum){
+                            u = graph[j][0];
+                            v = graph[j][1];
+                            minimum = graph[j][2];
+                            k = j; 
+                        }
+                    }
+                    
+                    if(find(u, set) !=  find(v, set)){
+                        int[] edge = {u, v, minimum};
+                        mst.add(edge);
+                        join(find(u, set), find(v, set), set);
+                        isIncluded[k] = 1;
+                        i++;
+                    }else{
+                        isIncluded[k] = 1;
+                    }
+                }
+               
+                //OUTPUT
+
+                System.out.println("There are " + num_vertices + " and " + num_edges + " edges");
+                System.out.println("\nEdge  | Weight");
+                for(i = 0; i < mst.size(); i++){
+                    
+                    System.out.println("(" + mst.get(i)[0] + ", " + mst.get(i)[1] + ")  " + mst.get(i)[2]);
+                    
+                }
                 
                 
-                
-                
-                
-                
+                for(i = 0; i < mst.size(); i++){
+                    total_weight = total_weight + mst.get(i)[2];
+                }
+ 
 		return total_weight;
 	}
+        
+        
+        
+        
+        
+        public static int find(int u, int[] set){
+            int n = u;
+            int v = 0;
+            while(set[n] > 0){
+                n = set[n];
+            }
+            while(u != n){
+                v = set[u];
+                set[u] = n;
+                u = v;
+            }
+            return n;
+        }
+        
+        public static void join(int u, int v, int[] set){
+            if(set[u] < set[v]){
+                set[u] = set[u] + set[v];
+                set[v] = u;
+            }else{
+                set[v] = set[v] + set[u];
+                set[u] = v;
+            }
+        }
 }
 
