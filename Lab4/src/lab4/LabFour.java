@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 public class LabFour {
 
@@ -73,6 +75,9 @@ public class LabFour {
                 }
                 System.out.println(out + "]:");
                 System.out.println("Least distance between two points = " + closestPair(5, array_1));
+                System.out.println("(" + s.peek()[1] + ", " + s.peek()[2] + ")" + ", " + "(" + s.peek()[3] + ", " + s.peek()[4] + ")");
+                s.clear();
+                
                 int[] array_2 = new int[n2];
                 out = "For array [ ";
                 for (int j = 0; j < n2; j++) {
@@ -81,6 +86,9 @@ public class LabFour {
                 }
                 System.out.println(out + "]:");
                 System.out.println("Least distance between two points = " + closestPair(8, array_2));
+                System.out.println("(" + s.peek()[1] + ", " + s.peek()[2] + ")" + ", " + "(" + s.peek()[3] + ", " + s.peek()[4] + ")");
+                s.clear();
+                
                 int[] array_3 = new int[n3];
                 out = "For array [ ";
                 for (int j = 0; j < n3; j++) {
@@ -89,6 +97,8 @@ public class LabFour {
                 }
                 System.out.println(out + "]:");
                 System.out.println("Least distance between two points = " + closestPair(10, array_3));
+                System.out.println("(" + s.peek()[1] + ", " + s.peek()[2] + ")" + ", " + "(" + s.peek()[3] + ", " + s.peek()[4] + ")");
+                s.clear();
             }
             System.out.print("--------------\n");
             freader.close();
@@ -184,14 +194,18 @@ Do not make any other changes in the code.
         // sort all the points in the array by x-cordinate (bubble sort)
         bubbleSortX(points);
         
-        double closestPair = closestPairUtil(points, points.length);
-        return closestPair;
+        double closestPairDistance = closestPairUtil(points, points.length);
+        //System.out.println("Closest Points = " );
+        return closestPairDistance;
     }
-    
+    static Stack<double[]> s = new Stack<double[]>();
     public static double closestPairUtil(int[][] points, int num_points){
+        double[] closestPairData = new double[5];
         if(num_points <= 3){
-            
-            return closestPairUtil2(points, num_points);
+            closestPairData = closestPairUtil2(points, num_points);
+            s.push(closestPairData);
+            //System.out.println("(" + closestPairData[1] + ", " + closestPairData[2] + ")" + ", " + "(" + closestPairData[3] + ", " + closestPairData[4] + ")");
+            return closestPairData[0];
         }
         int midCord = num_points/2;
         int[] midPoint = points[midCord];
@@ -205,16 +219,48 @@ Do not make any other changes in the code.
             minD = dR;
         }
         int j = 0;
-        int[][] verticalStrip = new int[points.length][2];
+
+        
+        List<List<Integer>> vertStripDynamic = new ArrayList<List<Integer>>(); 
+        
+        int dynamicListCount = 0;
         for(int i = 0; i < num_points; i++){
             if(Math.abs(points[i][0] - midPoint[0]) < minD){
-                verticalStrip[j] = points[i];
+                vertStripDynamic.add(new ArrayList<Integer>());
+                vertStripDynamic.get(dynamicListCount).add(points[i][0]);
+                vertStripDynamic.get(dynamicListCount).add(points[i][1]);
+                //verticalStrip[j] = points[i];
+                dynamicListCount++;
                 j++;
             }
         }
-            
         
-        return minD < stripClosestPair(verticalStrip, j, minD)? minD: stripClosestPair(verticalStrip, j, minD);
+        int[][] verticalStrip = new int[vertStripDynamic.size()][2];
+        for(int i = 0; i < vertStripDynamic.size(); i++){
+            verticalStrip[i][0] = vertStripDynamic.get(i).get(0);
+            verticalStrip[i][1] = vertStripDynamic.get(i).get(1);
+        }
+        
+        double minStrip = stripClosestPair(verticalStrip, j, minD);
+        double[] minDistInfo = new double[5];
+        if(minD < minStrip){
+            minDistInfo[0] = minD;
+            minDistInfo[1] = closestPairData[1];
+            minDistInfo[2] = closestPairData[2];
+            minDistInfo[3] = closestPairData[3];
+            minDistInfo[4] = closestPairData[4];
+            
+            return minD;
+        }else{
+            minDistInfo[0] = minStrip;
+            minDistInfo[1] = closestPairData[1];
+            minDistInfo[2] = closestPairData[2];
+            minDistInfo[3] = closestPairData[3];
+            minDistInfo[4] = closestPairData[4];
+            
+            return minStrip;
+        }
+        //System.out.println("(" + closestPairInfo[1] + ", " + closestPairInfo[2] + ")" + ", " + "(" + closestPairInfo[3] + ", " + closestPairInfo[4] + ")");
     }
     
     public static double stripClosestPair(int[][] verticalStrip, int size, double minD){
@@ -239,26 +285,45 @@ Do not make any other changes in the code.
     }
     
     public static int[][] generateRightPoints(int[][] points, int midCord){
-        int[][] rightPoints = new int[midCord][2];
+        int[][] rightPoints = new int[points.length-midCord][2];
         int pointsIndex = midCord;
-        for(int i = 0; i < midCord; i++){
+        for(int i = 0; i < points.length-midCord; i++){
             rightPoints[i] = points[pointsIndex];
             pointsIndex++;
         }
         return rightPoints;
     }
     
-    public static double closestPairUtil2(int[][] points, int num_points){
+    // brute force algorithim for closest pair, only runs when number of points in plane is < 3
+    public static double[] closestPairUtil2(int[][] points, int num_points){
         double minDistance = 2147483647;
-        
+        double pointX1 = 0;
+        double pointX2 = 0;
+        double pointY1 = 0;
+        double pointY2 = 0;
         for(int i = 0; i < points.length; i++){
             for(int j = i+1; j < points.length; j++){
                 if(calcDistance(points[i][0], points[i][1], points[j][0], points[j][1]) < minDistance){
                     minDistance = calcDistance(points[i][0], points[i][1], points[j][0], points[j][1]);
+                    pointX1 = points[i][0];
+                    pointY1 = points[i][1];
+                    pointX2 = points[j][0];
+                    pointY2 = points[j][1];
                 }
             }
         }
-        return minDistance;
+        // first index: minDistance
+        // second to fifth index: the points
+        
+        double[] closestPairInfo = new double[5];
+        closestPairInfo[0] = minDistance;
+        closestPairInfo[1] = pointX1;
+        closestPairInfo[2] = pointY1;
+        closestPairInfo[3] = pointX2;
+        closestPairInfo[4] = pointY2;
+        
+        
+        return closestPairInfo;
     }
     
     // calculates the distance between 2 points
